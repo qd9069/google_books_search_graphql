@@ -3,20 +3,20 @@ const { User } = require('../models');
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
-    Query: {
+    Query: {  
+    // ----- Find All --------
     //   users: async () => {
-    //     return User.find().populate('thoughts');
+    //     return User.find();
     //   },
-    //   user: async (parent, { username }) => {
-    //     return User.findOne({ username }).populate('thoughts');
-    //   },
-    //   thoughts: async (parent, { username }) => {
-    //     const params = username ? { username } : {};
-    //     return Thought.find(params).sort({ createdAt: -1 });
-    //   },
-    //   thought: async (parent, { thoughtId }) => {
-    //     return Thought.findOne({ _id: thoughtId });
-    //   },
+
+    // ---- Find One by Username -----------
+      user: async (parent, { username }) => {
+    //   user: async (parent, { _id, username }) => {
+        return User.findOne({ username });
+        // return User.findOne({ $or: [{ _id: _id }, { username: username }], });
+      },
+    
+    // ---- Me Query ------------
       me: async (parent, args, context) => {
         if (context.user) {
           return User.findOne({ _id: context.user._id });
@@ -33,6 +33,7 @@ const resolvers = {
       },
       login: async (parent, { email, password }) => {
         const user = await User.findOne({ email });
+        // const user = await User.findOne({ $or: [{ username: username }, { email: email }] });
   
         if (!user) {
           throw new AuthenticationError('No user found with this email address');
