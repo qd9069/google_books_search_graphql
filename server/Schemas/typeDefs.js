@@ -14,10 +14,11 @@ type Mutation {
 
 type User {
     _id: ID
-    username: String
-    email: String
+    username: String!
+    email: String!
     bookCount: Int
     savedBooks: [Book]
+    password: String!
 }
 
 type Book {
