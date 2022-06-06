@@ -18,14 +18,13 @@ type User {
     email: String
     bookCount: Int
     savedBooks: [Book]
-    // savedBooks: [Book]!
 }
 
 type Book {
-    bookId: String
+    bookId: String!
     authors: [String]
-    description: String
-    title: String
+    description: String!
+    title: String!
     image: String
     link: String
 }
