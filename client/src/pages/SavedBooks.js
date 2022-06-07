@@ -5,9 +5,10 @@ import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import { useQuery } from '@apollo/client';
-import { GET_ME } from '../utils/queries';
+import { GET_ME, QUERY_USER } from '../utils/queries';
 import { useMutation } from '@apollo/client';
 import { REMOVE_BOOK } from '../utils/mutations';
+import { Navigate, useParams } from 'react-router-dom';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
@@ -16,7 +17,22 @@ const SavedBooks = () => {
   const userDataLength = Object.keys(userData).length;
 
 
-  const { loading, data } = useQuery(GET_ME);
+  const { loading, data, error } = useQuery(GET_ME);
+  useEffect(() => {
+    try {
+      if (loading) {
+        console.log("LOADING...");
+      } 
+      if (error) {
+        console.log (error);
+      }
+      if (data) {
+        setUserData(data.me);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [userDataLength]);
 
   // useEffect(() => {
   //   const getUserData = async () => {
