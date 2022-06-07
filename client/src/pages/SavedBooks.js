@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 
-import { getMe, deleteBook } from '../utils/API';
+// import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import { useQuery } from '@apollo/client';
@@ -9,9 +9,12 @@ import { GET_ME, QUERY_USER } from '../utils/queries';
 import { useMutation } from '@apollo/client';
 import { REMOVE_BOOK } from '../utils/mutations';
 import { Navigate, useParams } from 'react-router-dom';
+import { concatPagination } from '@apollo/client/utilities';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
+
+  const [removeBook, { err }] = useMutation(REMOVE_BOOK);
 
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
@@ -68,10 +71,11 @@ const SavedBooks = () => {
     }
 
     try {
-      // const { loading, data } = useMutation(REMOVE_BOOK, {
-      //   // pass URL parameter
-      //   variables: { _id: _id },
-      // });
+      const { data } = await removeBook({
+        variables: { bookId: bookId },
+      });
+
+      setUserData(data.removeBook);
       // const response = await deleteBook(bookId, token);
 
       // if (!response.ok) {
@@ -80,6 +84,8 @@ const SavedBooks = () => {
 
       // const updatedUser = await response.json();
       // setUserData(updatedUser);
+
+  
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
