@@ -12,30 +12,18 @@ import { Navigate, useParams } from 'react-router-dom';
 import { concatPagination } from '@apollo/client/utilities';
 
 const SavedBooks = () => {
-  const [userData, setUserData] = useState({});
+  // const [userData, setUserData] = useState({});
 
-  const [removeBook, { err }] = useMutation(REMOVE_BOOK);
+  const [removeBook, { error: removeBookError }] = useMutation(REMOVE_BOOK, {
+    refetchQueries: [
+      {query: GET_ME}
+    ],
+  });
+  const { loading, data, error } = useQuery(GET_ME);
+  // console.log({loading, data, error});
 
   // use this to determine if `useEffect()` hook needs to run again
-  const userDataLength = Object.keys(userData).length;
-
-
-  const { loading, data, error } = useQuery(GET_ME);
-  useEffect(() => {
-    try {
-      if (loading) {
-        console.log("LOADING...");
-      } 
-      if (error) {
-        console.log (error);
-      }
-      if (data) {
-        setUserData(data.me);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [userDataLength]);
+  // const userDataLength = Object.keys(userData).length;
 
   // useEffect(() => {
   //   const getUserData = async () => {
@@ -74,8 +62,8 @@ const SavedBooks = () => {
       const { data } = await removeBook({
         variables: { bookId: bookId },
       });
+      // setUserData(data.removeBook);
 
-      setUserData(data.removeBook);
       // const response = await deleteBook(bookId, token);
 
       // if (!response.ok) {
@@ -85,7 +73,6 @@ const SavedBooks = () => {
       // const updatedUser = await response.json();
       // setUserData(updatedUser);
 
-  
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
@@ -94,10 +81,11 @@ const SavedBooks = () => {
   };
 
   // if data isn't here yet, say so
-  if (!userDataLength) {
+  if (loading) {
     return <h2>LOADING...</h2>;
   }
 
+  const userData = data.me;
   return (
     <>
       <Jumbotron fluid className='text-light bg-dark'>
